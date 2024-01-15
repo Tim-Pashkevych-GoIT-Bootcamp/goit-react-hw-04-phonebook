@@ -1,58 +1,54 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import { nanoid } from 'nanoid';
 
 import css from './ContactForm.module.css';
-import ContactFormInput from 'components/ContactFormInput/ContactFormInput';
-import ContactFormButton from 'components/ContactFormButton/ContactFormButton';
+import { ContactFormInput, ContactFormButton } from 'components';
 
 const INITIAL_STATE = {
   name: '',
   number: '',
 };
 
-export default class ContactForm extends Component {
-  state = { ...INITIAL_STATE };
+export const ContactForm = ({ onSubmit }) => {
+  const [contact, setContact] = useState(INITIAL_STATE);
 
-  onChange = ({ target }) => {
-    this.setState({ [target.name]: target.value });
-  };
+  const onChange = ({ target }) =>
+    setContact(prev => ({ ...prev, [target.name]: target.value }));
 
-  onSubmit = event => {
+  const onFormSubmit = event => {
     event.preventDefault();
 
     const id = nanoid();
-    const { name, number } = this.state;
+    const { name, number } = contact;
 
-    this.reset();
-    this.props.onSubmit({ id, name, number });
+    reset();
+    onSubmit({ id, name, number });
   };
 
-  reset = () => {
-    this.setState({ ...INITIAL_STATE });
+  const reset = () => {
+    setContact(INITIAL_STATE);
   };
 
-  render() {
-    return (
-      <form className={css.form} name="contactForm" onSubmit={this.onSubmit}>
-        <ContactFormInput
-          label="Name"
-          type="text"
-          name="name"
-          value={this.state.name}
-          required={true}
-          focus={true}
-          onChange={this.onChange}
-        />
-        <ContactFormInput
-          label="Number"
-          type="tel"
-          name="number"
-          value={this.state.number}
-          required={true}
-          onChange={this.onChange}
-        />
-        <ContactFormButton text="Add contact" type="submit" />
-      </form>
-    );
-  }
-}
+  return (
+    <form className={css.form} name="contactForm" onSubmit={onFormSubmit}>
+      <ContactFormInput
+        label="Name"
+        type="text"
+        name="name"
+        value={contact.name}
+        required={true}
+        focus={true}
+        onChange={onChange}
+      />
+      <ContactFormInput
+        label="Number"
+        type="tel"
+        name="number"
+        value={contact.number}
+        required={true}
+        onChange={onChange}
+      />
+      <ContactFormButton text="Add contact" type="submit" />
+    </form>
+  );
+};

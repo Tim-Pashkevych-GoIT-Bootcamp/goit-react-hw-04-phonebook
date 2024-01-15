@@ -1,71 +1,58 @@
-import React, { Component } from 'react';
-import Section from './Section/Section';
-import ContactForm from './ContactForm/ContactForm';
-import ContactsListFilter from './ContactsListFilter/ContactsListFilter';
-import ContactsList from './ContactsList/ContactsList';
+import { useEffect, useState } from 'react';
+import {
+  ContactForm,
+  Section,
+  ContactsListFilter,
+  ContactsList,
+} from 'components';
 
-const INITIAL_STATE = {
-  filter: '',
-  contacts: [],
-};
-
-export default class App extends Component {
-  state = { ...INITIAL_STATE };
-
-  componentDidMount() {
+export const App = () => {
+  const [filter, setFilter] = useState('');
+  const [contacts, setContacts] = useState(() => {
+    let contacts = [];
     try {
-      const contacts = localStorage.getItem('contacts');
-      const parsedContacts = JSON.parse(contacts);
-
-      if (parsedContacts) {
-        this.setState({ contacts: parsedContacts });
-      }
+      contacts = JSON.parse(localStorage.getItem('contacts')) || [];
     } catch (error) {
       console.log(error);
     }
-  }
 
-  componentDidUpdate(prevProps, prevState) {
+    return contacts;
+  });
+
+  useEffect(() => {
     try {
-      if (this.state.contacts !== prevState.contacts) {
-        localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-      }
+      localStorage.setItem('contacts', JSON.stringify(contacts));
     } catch (error) {
       console.log(error);
     }
-  }
+  }, [contacts]);
 
-  onChange = ({ target }) => {
-    this.setState({ filter: target.value });
+  const onChange = ({ target }) => {
+    setFilter(target.value);
   };
 
-  onDelete = contactId => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
-    }));
+  const onDelete = contactId => {
+    setContacts(prev => prev.filter(contact => contact.id !== contactId));
   };
 
-  addContact = newContact => {
-    if (this.isContactAlreadyAdded(newContact.name)) {
+  const addContact = newContact => {
+    if (isContactAlreadyAdded(newContact.name)) {
       alert(`${newContact.name} is already in contacts.`);
       return;
     }
 
-    this.setState(prevState => ({
-      contacts: [...prevState.contacts, newContact],
-    }));
+    setContacts(prev => [...prev, newContact]);
   };
 
-  isContactAlreadyAdded = name => {
+  const isContactAlreadyAdded = name => {
     return (
-      this.state.contacts.filter(
+      contacts.filter(
         contact => contact.name.toLocaleLowerCase() === name.toLocaleLowerCase()
       ).length > 0
     );
   };
 
-  searchResult = () => {
-    const { filter, contacts } = this.state;
+  const searchResult = () => {
     const keyword = filter?.toLocaleLowerCase();
 
     return contacts.filter(contact =>
@@ -73,23 +60,18 @@ export default class App extends Component {
     );
   };
 
-  render() {
-    return (
-      <>
-        <Section title="Phonebook">
-          <ContactForm onSubmit={this.addContact} />
-        </Section>
+  return (
+    <>
+      <Section title="Phonebook">
+        <ContactForm onSubmit={addContact} />
+      </Section>
 
-        {this.state.contacts.length > 0 && (
-          <Section title="Contacts">
-            <ContactsListFilter onChange={this.onChange} />
-            <ContactsList
-              contacts={this.searchResult()}
-              onDelete={this.onDelete}
-            />
-          </Section>
-        )}
-      </>
-    );
-  }
-}
+      {contacts.length > 0 && (
+        <Section title="Contacts">
+          <ContactsListFilter onChange={onChange} />
+          <ContactsList contacts={searchResult()} onDelete={onDelete} />
+        </Section>
+      )}
+    </>
+  );
+};

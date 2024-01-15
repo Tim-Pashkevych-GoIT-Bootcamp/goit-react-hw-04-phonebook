@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import css from './ContactFormInput.module.css';
 
-const ContactFormInput = ({
+export const ContactFormInput = ({
   label,
   type,
   name,
@@ -29,5 +29,3 @@ const ContactFormInput = ({
     </fieldset>
   );
 };
-
-export default ContactFormInput;

@@ -1,7 +1,7 @@
 import css from './ContactsList.module.css';
-import ContactFormButton from 'components/ContactFormButton/ContactFormButton';
+import { ContactFormButton } from 'components';
 
-const ContactsList = ({ contacts, onDelete }) => {
+export const ContactsList = ({ contacts, onDelete }) => {
   return (
     <ul className={css.contactsList}>
       {contacts.map(({ id, name, number }, index) => (
@@ -13,5 +13,3 @@ const ContactsList = ({ contacts, onDelete }) => {
     </ul>
   );
 };
-
-export default ContactsList;

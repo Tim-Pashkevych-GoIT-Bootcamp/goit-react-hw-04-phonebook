@@ -1,6 +1,6 @@
-import ContactFormInput from 'components/ContactFormInput/ContactFormInput';
+import { ContactFormInput } from 'components';
 
-const ContactsListFilter = ({ fieldFilterValue, onChange }) => {
+export const ContactsListFilter = ({ fieldFilterValue, onChange }) => {
   return (
     <ContactFormInput
       label="Find contacts by name"
@@ -11,5 +11,3 @@ const ContactsListFilter = ({ fieldFilterValue, onChange }) => {
     />
   );
 };
-
-export default ContactsListFilter;
